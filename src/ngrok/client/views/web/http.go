@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"html/template"
 	"net/http"
 	"net/http/httputil"
@@ -261,6 +262,21 @@ func (whv *WebHttpView) register() {
 		// write the response
 		if err := tmpl.Execute(w, string(payload)); err != nil {
 			panic(err)
+		}
+	})
+
+	http.HandleFunc("/tunnel/forward", func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if r := recover(); r != nil {
+				err := util.MakePanicTrace(r)
+				whv.Error("HTTP web view failed: %v", err)
+				http.Error(w, err, 500)
+			}
+		}()
+
+		state := whv.ctl.State()
+		for _, t := range state.GetTunnels() {
+			fmt.Fprintf(w, "%s: %s -> %s\n", "Forwarding", t.PublicUrl, t.LocalAddr)
 		}
 	})
 }
