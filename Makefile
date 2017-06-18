@@ -4,8 +4,8 @@ BUILDTAGS=debug
 default: all
 
 deps: assets
-	go get -tags '$(BUILDTAGS)' -d -v ngrok/...
-	ln -s $GOPATH/src/github.com/sixbyter/ngrok/src/ngrok $GOPATH/src/ngrok
+	echo "ln -s $GOPATH/src/github.com/sixbyter/ngrok/src/ngrok $GOPATH/src/ngrok" \
+	echo "go get -tags '$(BUILDTAGS)' -d -v ngrok/..."
 
 server: deps
 	go install -tags '$(BUILDTAGS)' ngrok/main/ngrokd
